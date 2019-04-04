@@ -1,0 +1,31 @@
+h2{
+    font-family:'Franklin Gothic Medium';
+  }
+#tutup:focus {
+    outline: none;
+  }
+  option{
+    font-size: 18px;
+  }
+  #tutup{
+    background-color: white;
+    padding: 1.2rem;
+  }
+  #tutup:hover {
+    color: #dc3545;
+    transition: 0.2s;
+  }
+  body{
+    background: url('./Background.png')
+  }
+  .card{
+    box-shadow: 1px 1px 8px 1px #888888;
+  }
+@media (max-width: 1000px){
+body{
+    background: url('./Background-1.png')
+}
+.container{
+    max-width: 90%;
+}
+}

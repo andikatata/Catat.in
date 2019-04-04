@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Catet.in</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css'>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" href="./css/clipboard.png">
+</head>
+
+<body>
+
+  <div id="app">
+    <div class="container">
+      <h2 class="text-center mb-4 mt-5">CATATAN TUGAS KULIAH</h2>
+
+      <div class="alert" :class="{'alert-warning':alert.tipo == 'warning','alert-success':alert.tipo == 'success'}"
+        v-if="showAlert">
+
+        {{alert.message}}
+        <button type="button" @click.prevent="closeAlert" class="close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="header" style="padding-bottom:20px;">
+          <button @click.prevent="add" type="button" class="btn btn-info waves-effect m-r-20 fas fa-plus "
+            style="padding:10px">
+            TAMBAH DATA
+          </button>
+        </div>
+        <div class="tbody">
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th class="text-center">No.</th>
+                  <th class="text-center">Mata Kuliah</th>
+                  <th class="text-center">Dosen</th>
+                  <th class="text-center">Tugas Kuliah</th>
+                  <th class="text-center">Deadline</th>
+                  <th colspan="2" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!dataTugas || dataTugas.length == 0 ">
+                  <td colspan="7" class="text-center">Alhamdulillah tidak ada tugas</td>
+                </tr>
+                <tr v-else v-for="(t,k) in dataTugas">
+                  <td class="text-center">{{k+1}}</td>
+                  <td class="text-center">{{t.matkul}}</td>
+                  <td class="text-center">{{t.dosen}}</td>
+                  <td class="text-center">{{t.tugas}}</td>
+                  <td class="text-center">{{t.batas}}</td>
+                  <td class="text-center">
+                    <a href @click.prevent="edit(t,k)" class="btn btn-warning text-danger btn-md fas fa-pen"></a>
+                  </td>
+                  <td class="text-center">
+                    <a href @click.prevent="hapus(k)" class="btn btn-danger btn-md far fa-trash-alt"></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- # modal form -->
+    <div v-if="modal" ref="modal" class="modal fade" id="modalForm" tabindex="-1" role="dialog"
+      aria-labelledby="modalFormLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color:#007bff;">
+            <h5 class="modal-title text-center" style="color:white;font-weight: 650;" id="modalFormLabel">
+              {{modal.title}}</h5>
+            <button type="button" class="close" id="tutup" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form v-on:submit.prevent="save" style="border-bottom:3px solid #007bff;">
+            <div class="modal-body" style="margin-left:10px;margin-right: 10px;">
+              <div class="form-group">
+                <label class="col-form-label col-4">Mata Kuliah</label>
+                <div class="col-12">
+                  <select v-model="modal.data.matkul" class="form-control" required>
+                    <option disabled style="color:#b8b8b8">Pilih Mata Kuliah</option>
+                    <option>Matematika</option>
+                    <option>Bahasa Inggris</option>
+                    <option>Produktif</option>
+                    <option>Bahasa Perancis</option>
+                    <option>Bahasa Jepang</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-form-label col-5">Dosen Pembimping</label>
+                <div class="col-12">
+                  <select v-model="modal.data.dosen" class="form-control" required>
+                    <option disabled style="color:#b8b8b8">Pilih Dosen</option>
+                    <option>prof.Andika Tata</option>
+                    <option>Ir.Tata Andika</option>
+                    <option>Antoni Putro</option>
+                    <option>Toni Sujito</option>
+                    <option>Ahmad Subagjo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-form-label col-4">Tugas Kuliah</label>
+                <div class="col-12">
+                  <textarea id="" cols="30" rows="2" v-model="modal.data.tugas" class="form-control" required>
+                    </textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-form-label col-3">Deadline</label>
+                <div class="col-12">
+                  <input type="date" v-model="modal.data.batas" class="form-control" required>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style="padding:1.2rem">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-success">Simpan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src='https://cdn.jsdelivr.net/npm/vue/dist/vue.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js'></script>
+
+
+
+  <script src="js/index.js"></script>
+
+
+
+
+</body>
+
+</html>
